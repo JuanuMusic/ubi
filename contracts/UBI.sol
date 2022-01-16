@@ -341,11 +341,33 @@ contract UBI is Initializable {
   function delegate(address _receiver, uint256 _percentage) public {
     // Only humans can delegate their accruance
     require(proofOfHumanity.isRegistered(msg.sender), "The sender is not registered in Proof Of Humanity.");
+    // TODO: What if sender want to burn a percentage of his UBIs consistently? Maybe, if the only way is by burning
+    //   specific amounts manually or delegating them to other 'valid' address, will make him avoid the burn.
+    //   I think letting sender burn a percentage would be an interesting feature (maybe you prefer a different function
+    //   instead of masking it as a delegation to zero-address). 
     require(_receiver != address(0), "Delegate cannot be an empty address");
     require(_receiver != msg.sender, "Invalid circular delegation");
+    // TODO: Maybe would be better to override old percentage with the new one instead of denying the action.
     require(checkDelegation(msg.sender, _receiver) == false, "Delegation already exists.");
 
     // Set new delegation
+    // TODO: Maybe a 'renounce to delegation' function would be great for some cases. Even the address receiving the
+    //   UBI through delegation could choose the new percentage of that delegation, obviously letting choose only
+    //   percentages lower than the currently set, where choosing percentage = 0 would be a particular case for
+    //   renouncing to the entire delegation.
+    // TODO: What if sender is receiving more than BASIS_POINTS, for example through delegations.
+    //   And now sender wants to delegate a percentage of all his UBI including delegations that targeted him.
+    //   Would be great that delegations always uses percentages instead of fixed UBI amounts (aka strengths)
+    //   and be calculated dynamically over the total accrued UBI.
+    //   - Why delegating delegations could be useful: Because humans that don't know where to delegate their UBI,
+    //   or don't want to be updating their delegations, could delegate them to a trusted human, trusting in the 
+    //   delegation decisions he will choose.
+    //   - Approach: All delegations has a constant 'strength' until a new delegation is added/revoked. 
+    //   So, when a delegation is modified/added, it must calculate the new strengths, but for that, we need to have all
+    //   delegations stored as percentages instead of fixed amounts.
+    //   - Warning: A cycle of delegations (i.e. a->b->c->...->a) could lead to problems, needs more brainstorming.
+    // TODO: How about _percentage being greater than 100? strength would be greater than BASIS_POINTS.
+    //   If delegations percentages are stored, we could require: currentDelegatedPercentage + _percentage <= 100
     uint256 strength = BASIS_POINTS.mul(_percentage).div(100);
     streamSources[_receiver].push(Stream(msg.sender, strength, block.timestamp));
     streamTargets[msg.sender].push(Stream(_receiver, strength, block.timestamp));
