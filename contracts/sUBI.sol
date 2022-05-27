@@ -372,7 +372,7 @@ contract sUBI is ERC721, ISUBI, ReentrancyGuard  {
     }
 
     /// @dev Streams accrue their value on the ERC721 token, not the recipient so this returns 0 always.
-    function incomingTotalAccruedValue(address _human) external override view returns (uint256) {
+    function incomingTotalAccruedValue(address _human) public override view returns (uint256) {
       return 0;
     }
 
@@ -380,19 +380,22 @@ contract sUBI is ERC721, ISUBI, ReentrancyGuard  {
      * @dev gets the delegated accrued value.
      * This sums the accrued value of all active streams from the human's `accruedSince` to `block.timestamp`
      */
-    function outgoingTotalAccruedValue(address _human) external override view returns (uint256)  {
+    function outgoingTotalAccruedValue(address _human) public override view returns (uint256)  {
       uint256 delegatedAccruedValue;
+      
+      if(!IProofOfHumanity(proofOfHumanity).isRegistered(_human)) return 0; // Sender is a registered human
+      
+      uint256 senderAccruedSince = IUBI(ubi).getAccruedSince(_human);
+
       // Iterate on each stream id of the human and calculate the currently delegated accrued value
       for(uint256 i = 0; i < streamIdsOf[_human].length; i++) {
         uint256 streamId = streamIdsOf[_human][i];
 
         Types.Stream memory stream = streams[streamId];
-        if(!IProofOfHumanity(proofOfHumanity).isRegistered(stream.sender)) continue; // Sender is a registered human
-
+        
         // Time delegated to the stream
         uint256 streamAccumulatedTime = accruedTime(streamId);
 
-        uint256 senderAccruedSince = IUBI(ubi).getAccruedSince(_human);
         // // If there is accumulated time and the human accrued after the stream started, subtract delta of accrued since and startTime
         uint256 streamAccruingStart = Math.max(stream.startTime, stream.accruedSince);
         if(streamAccumulatedTime > 0 && senderAccruedSince >= streamAccruingStart) {
@@ -407,6 +410,12 @@ contract sUBI is ERC721, ISUBI, ReentrancyGuard  {
         delegatedAccruedValue += streamAccumulatedTime.mul(stream.ratePerSecond);
       }
       return delegatedAccruedValue;
+    }
+
+    function bothTotalAccruedValues(address _human) public virtual override view returns (uint256 outTotalAccruedValue, uint256 inTotalAccruedValue) {
+      inTotalAccruedValue = 0; // There is no incoming accrued value on sUBI
+      outTotalAccruedValue = outgoingTotalAccruedValue(_human);
+      return (inTotalAccruedValue, outTotalAccruedValue);
     }
 
     // function outgoingTotalAccruedValue(address _human) external override view returns (uint256) {

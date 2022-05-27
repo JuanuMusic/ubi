@@ -195,6 +195,12 @@ contract fUBI is ERC721, IFUBI, ReentrancyGuard  {
     return ubiOutflow[_human].mul(block.timestamp.sub(IUBI(ubi).getAccruedSince(_human)));
   }
 
+  function bothTotalAccruedValues(address _human) public virtual override view returns (uint256 inTotalAccruedValue,uint256 outTotalAccruedValue) {
+      inTotalAccruedValue = incomingTotalAccruedValue(_human);
+      outTotalAccruedValue = outgoingTotalAccruedValue(_human);
+      return (inTotalAccruedValue,outTotalAccruedValue);
+  }
+
   function setUBI(address pUBI) public onlyUBI {
     ubi = pUBI;
   }

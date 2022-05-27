@@ -382,10 +382,7 @@ contract UBI is Initializable {
 
   function setDelegator(address _implementation) public onlyByGovernor {
     // If the delegator doesnt exist, just crete it with the new data
-    if(!delegators.contains(_implementation)) {
-    // add the new or found delegator to the set.
-      delegators.add(_implementation);
-    }
+    if(!delegators.add(_implementation)) revert ("already added");
   }
 
   function removeDelegator(address _implementation) public onlyByGovernor {
@@ -482,10 +479,8 @@ contract UBI is Initializable {
     uint256 delegatorsLength = delegators.length();
     for(uint256 i = 0; i < delegatorsLength; i++) {
       IUBIDelegator delegator = IUBIDelegator(delegators.at(i));
-      uint256 incoming = delegator.incomingTotalAccruedValue(_human);
-      totalAccrued += incoming;
-      uint256 outgoing = delegator.outgoingTotalAccruedValue(_human);     
-      totalAccrued -= outgoing;
+      (uint256 incoming, uint256 outgoing) = delegator.bothTotalAccruedValues(_human);
+      totalAccrued = totalAccrued + incoming - outgoing;
     }
 
     return totalAccrued;

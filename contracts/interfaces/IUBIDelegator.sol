@@ -49,7 +49,8 @@ interface IUBIDelegator {
      * @dev Gets the outgoing delegated accrued value. This should be since the accruedSince date of the human source.
      */
     function outgoingTotalAccruedValue(address _human) external virtual view returns (uint256);
-    
+
+    function bothTotalAccruedValues(address _human) external virtual view returns (uint256 inTotalAccruedValue, uint256 outTotalAccruedValue);
     /**
      * @dev Returns the basic delegation info: sender, current recipient, rate per second and `isActive`.
      */
