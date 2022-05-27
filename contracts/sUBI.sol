@@ -412,10 +412,9 @@ contract sUBI is ERC721, ISUBI, ReentrancyGuard  {
       return delegatedAccruedValue;
     }
 
-    function bothTotalAccruedValues(address _human) public virtual override view returns (uint256 outTotalAccruedValue, uint256 inTotalAccruedValue) {
-      inTotalAccruedValue = 0; // There is no incoming accrued value on sUBI
-      outTotalAccruedValue = outgoingTotalAccruedValue(_human);
-      return (inTotalAccruedValue, outTotalAccruedValue);
+    function consolidatedAccruedValue(address _human) public virtual override view returns (uint256 consolidated) {
+      consolidated = outgoingTotalAccruedValue(_human);
+      return consolidated;
     }
 
     // function outgoingTotalAccruedValue(address _human) external override view returns (uint256) {

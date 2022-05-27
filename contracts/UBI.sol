@@ -479,8 +479,7 @@ contract UBI is Initializable {
     uint256 delegatorsLength = delegators.length();
     for(uint256 i = 0; i < delegatorsLength; i++) {
       IUBIDelegator delegator = IUBIDelegator(delegators.at(i));
-      (uint256 incoming, uint256 outgoing) = delegator.bothTotalAccruedValues(_human);
-      totalAccrued = totalAccrued + incoming - outgoing;
+      totalAccrued += delegator.consolidatedAccruedValue(_human);
     }
 
     return totalAccrued;

@@ -50,7 +50,7 @@ interface IUBIDelegator {
      */
     function outgoingTotalAccruedValue(address _human) external virtual view returns (uint256);
 
-    function bothTotalAccruedValues(address _human) external virtual view returns (uint256 inTotalAccruedValue, uint256 outTotalAccruedValue);
+    function consolidatedAccruedValue(address _human) external virtual view returns (uint256 consolidated) ;
     /**
      * @dev Returns the basic delegation info: sender, current recipient, rate per second and `isActive`.
      */
