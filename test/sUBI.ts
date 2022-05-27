@@ -52,7 +52,7 @@ describe("sUBI.sol", () => {
     accruedPerSecond = await ubi.accruedPerSecond();
 
     // default all accounts to not registered
-    for(let i = 0; i < accounts.length; i++) {
+    for (let i = 0; i < accounts.length; i++) {
       await pohMockService.setSubmissionIsRegistered(mockPoh, accounts[i].address, false);
     }
   })
@@ -94,7 +94,7 @@ describe("sUBI.sol", () => {
       expect((await sUBI.balanceOf(accounts[2].address)).toNumber()).to.equal(1);
     });
 
-    
+
     it("fail path - Executing onWithdraw from user should fail", async () => {
       // ARRANGE
       const sUBI = await deploySUBI(ubi, accounts[0].address);
@@ -633,7 +633,7 @@ describe("sUBI.sol", () => {
 
       // Calculate corresponding ubi per second to delegate to each stream 
       const streamsToCreate = await sUBI.maxStreamsAllowed();
-      const ubiPerSecondPerDelegate = accruedPerSecond.div(streamsToCreate+1);
+      const ubiPerSecondPerDelegate = accruedPerSecond.div(streamsToCreate + 1);
 
       // Create a new stream with half ubiPerSecond
       const currentBlockTime = await testUtils.getCurrentBlockTime();
@@ -741,7 +741,7 @@ describe("sUBI.sol", () => {
       const lastStreamBalance = await sUBI.balanceOfStream(streamId);
       const lastSenderBalance = await ubi.balanceOf(sender.address);
       const lastRecipientBalance = await ubi.balanceOf(recipient.address);
-      
+
       // Stream balance should be 0 (because it was withdrawn)
       expect(lastStreamBalance).to.eq(0, "Invalid last stream balance");
       // Recipient balance should be the value withdrawn (1 second)
@@ -1358,10 +1358,10 @@ describe("sUBI.sol", () => {
 
       // Get initial recipient balance
       const prevRecipientBalance = await ubi.balanceOf(recipient.address);
-      
+
       // Go to end of last stream
       await testUtils.goToEndOfStream(streamId3, sUBI, network);
-      
+
       // ACT
       await ubi.withdrawFromDelegations(sUBI.address, [streamId1, streamId2, streamId3]);
 
