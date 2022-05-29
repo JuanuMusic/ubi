@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.7.3;
+
 interface IUBIDelegator {
 
     /**
@@ -12,15 +13,6 @@ interface IUBIDelegator {
         uint256 startTime,
         uint256 endTime
     );
-
-    // /**
-    //  * @notice Emits when the recipient of a Flow withdraws a portion or all their pro rata share of the Flow.
-    //  */
-    // event WithdrawFromFlow(
-    //     uint256 indexed FlowId,
-    //     address indexed recipient,
-    //     uint256 amount
-    // );
 
     /**
      * @notice Emits when a Flow is successfully cancelled.
