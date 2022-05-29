@@ -1,3 +1,5 @@
+import * as dotenv from "dotenv";
+
 require("@nomiclabs/hardhat-etherscan");
 require("@nomiclabs/hardhat-truffle5");
 require("@nomiclabs/hardhat-solhint");
@@ -9,6 +11,7 @@ require("hardhat-gas-reporter");
 require("solidity-coverage");
 require("./scripts/tasks");
 
+dotenv.config();
 
 const config: HardhatUserConfig & { etherscan: any } = {
   networks: {
