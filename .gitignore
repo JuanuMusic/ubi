@@ -11,4 +11,4 @@ coverageEnv/
 scTopics
 .DS_Store
 .openzeppelin
-
+.env
