@@ -19,13 +19,13 @@ const config: HardhatUserConfig & { etherscan: any } = {
       url: "http://localhost:8545",
     },
     kovan: {
-      url: `https://kovan.infura.io/v3/${process.env.INFURA_API_KEY}`,
-      accounts: [process.env.KOVAN_PRIVATE_KEY],
+      url: process.env.KOVAN_RPC_URL,
+      accounts: [process.env.PRIVATE_KEY],
       gas: "auto"
     } as HttpNetworkUserConfig,
     goerli: {
-      url: `https://goerli.infura.io/v3/${process.env.INFURA_API_KEY}`,
-      accounts: [process.env.GOERLI_PRIVATE_KEY],
+      url: process.env.GOERLI_RPC_URL,
+      accounts: [process.env.PRIVATE_KEY],
       gas: "auto"
     } as HttpNetworkUserConfig,
     coverage: {
