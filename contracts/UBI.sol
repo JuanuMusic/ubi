@@ -116,6 +116,10 @@ contract UBI is Initializable {
   
   /// @dev Stores the total locked value from delegations.
   mapping(address => uint256) public lockedDelegatedValue;
+
+  using EnumerableSet for EnumerableSet.AddressSet;
+  EnumerableSet.AddressSet delegators;
+
   /* Modifiers */
 
   /// @dev non Reentrancy modifier for reentrancy guard
@@ -371,15 +375,6 @@ contract UBI is Initializable {
     }
   }
 
-  struct Delegator {
-    address implementationAddress;
-    bool isAllowed;
-    bool implementsDelegator;
-  }
-
-  using EnumerableSet for EnumerableSet.AddressSet;
-  EnumerableSet.AddressSet delegators;
-
   function setDelegator(address _implementation) public onlyByGovernor {
     // If the delegator doesnt exist, just crete it with the new data
     if(!delegators.add(_implementation)) revert ("already added");
@@ -387,10 +382,12 @@ contract UBI is Initializable {
 
   function removeDelegator(address _implementation) public onlyByGovernor {
     // If the delegator doesnt exist, just crete it with the new data
-    if(delegators.contains(_implementation)) {
-    // add the new or found delegator to the set.
-      delegators.remove(_implementation);
-    }
+    if(!delegators.remove(_implementation)) revert("not found");
+  }
+
+  /// @dev Indicates if the address is an active delegator on UBI.
+  function isDelegator(address _implementation) public view returns(bool) {
+    return delegators.contains(_implementation);
   }
 
   function createDelegation(address implementation, address recipient, uint256 ubiPerSecond, bytes calldata data) public nonReentrant {
