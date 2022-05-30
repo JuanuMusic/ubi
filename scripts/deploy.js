@@ -8,26 +8,34 @@ async function main() {
     "Deploying contracts with the account:",
     deployer.address
   );
-  
+
   console.log("Account balance:", (await deployer.getBalance()).toString());
 
   const Token = await ethers.getContractFactory("UBI");
   console.log("Deploying UBI Coin...");
 
-  const token = await upgrades.deployProxy(
-    Token,
-    [
-      deploymentParams.INITIAL_SUPPLY,
-      deploymentParams.TOKEN_NAME,
-      deploymentParams.TOKEN_SYMBOL,
-      deploymentParams.ACCRUED_PER_SECOND,
-      deploymentParams.PROOF_OF_HUMANITY_KOVAN
-    ],
-    {
-      initializer: 'initialize',
-      unsafeAllowCustomTypes: true 
-    }
-  );
+  // const token = await upgrades.deployProxy(
+  //   Token,
+  //   [
+  //     deploymentParams.INITIAL_SUPPLY,
+  //     deploymentParams.TOKEN_NAME,
+  //     deploymentParams.TOKEN_SYMBOL,
+  //     deploymentParams.ACCRUED_PER_SECOND,
+  //     deploymentParams.PROOF_OF_HUMANITY_KOVAN
+  //   ],
+  //   {
+  //     initializer: 'initialize',
+  //     unsafeAllowCustomTypes: true 
+  //   }
+  // );
+  const token = await Token.deploy();
+
+  await token.deployed()
+  await token.initialize(deploymentParams.INITIAL_SUPPLY,
+    deploymentParams.TOKEN_NAME,
+    deploymentParams.TOKEN_SYMBOL,
+    deploymentParams.ACCRUED_PER_SECOND,
+    deploymentParams.PROOF_OF_HUMANITY_KOVAN);
 
   console.log("Token deployed to:", token.address);
 }

@@ -12,7 +12,9 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/math/Math.sol";
 import "@openzeppelin/contracts/cryptography/ECDSA.sol";
+import "@openzeppelin/contracts/utils/Address.sol";
 import "./interfaces/IFUBI.sol";
+import "./interfaces/IFUBIReceiver.sol";
 import "./ReentrancyGuard.sol";
 import "hardhat/console.sol";
 
@@ -57,6 +59,7 @@ interface IUBI {
 contract fUBI is ERC721, IFUBI, ReentrancyGuard  {
 
   using SafeMath for uint256;
+  using Address for address;
 
   address public ubi;
   address public governor;
@@ -83,6 +86,11 @@ contract fUBI is ERC721, IFUBI, ReentrancyGuard  {
 
   /// Streams sin final recibido por el address. No tiene restriccion de valor.
   mapping (address => uint256) public ubiInflow;
+
+
+  // Equals to `bytes4(keccak256("onDelegationCanceled(address,uint256,bytes)"))`
+   // which can be also obtained as `IFUBIReceiver(0).onDelegationCanceled.selector`
+  bytes4 private constant _FUBI_CANCELED = 0x150b7a02;
 
   //mapping(address => uint256) public delegatedFlow;
 
@@ -246,19 +254,51 @@ contract fUBI is ERC721, IFUBI, ReentrancyGuard  {
      */
     function cancelDelegation(uint256 flowId) public override nonReentrant onlyUBI returns (uint256)
     {
+      return _safeCancelDelegation(flowId); 
+    }
+
+    function _safeCancelDelegation(uint256 flowId) private returns (uint256) {
       (uint256 ratePerSecond, uint256 startTime,
        address sender, bool isActive) = this.getFlow(flowId);
 
       address recipient = this.ownerOf(flowId);
+
       // _updateBalance(sender);
       // _updateBalance(recipient);
       ubiOutflow[sender] = ubiOutflow[sender].sub(ratePerSecond);
       ubiInflow[recipient] = ubiInflow[recipient].sub(ratePerSecond); 
-      
+      require(_checkOnDelegationCanceled(recipient, flowId, ""), "FUBI: canceled to non IFUBIReceiver implemente");
       deleteFlow(flowId);
+      
       emit CancelDelegation(flowId, sender, ownerOf(flowId));
 
       return 0;
+    }
+
+    /**
+     * @dev Internal function to invoke {IFUBIReceiver-onDelegationCanceled} on a target address.
+     * The call is not executed if the target address is not a contract.
+     *
+     * @param tokenOwner The owner of the token
+     * @param tokenId uint256 ID of the token to be transferred
+     * @param _data bytes optional data to send along with the call
+     * @return bool whether the call correctly returned the expected magic value
+     */
+    function _checkOnDelegationCanceled(address tokenOwner, uint256 tokenId, bytes memory _data)
+        private returns (bool)
+    {
+        if (!tokenOwner.isContract()) {
+            return true;
+        }
+
+        bytes memory returndata = tokenOwner.functionCall(abi.encodeWithSelector(
+            IFUBIReceiver(tokenOwner).onDelegationCanceled.selector,
+            _msgSender(),
+            tokenId,
+            _data
+        ), "FUBI: canceled FUBI on non IFUBIReceiver implementer");
+        bytes4 retval = abi.decode(returndata, (bytes4));
+        return (retval == _FUBI_CANCELED);
     }
   
   function _beforeTokenTransfer(

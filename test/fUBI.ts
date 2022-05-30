@@ -9,11 +9,11 @@ const ubiMockService = require("./utils/ubiMockService");
 const deploymentParams = require('../deployment-params');
 
 async function deployFUBI(ubiInstance, governorAddress) {
-    const FUBIFactory = await ethers.getContractFactory("fUBI");
-    const fUBI = await FUBIFactory.deploy(ubiInstance.address, governorAddress,deploymentParams.FUBI_MAX_STREAMS_ALLOWED ,deploymentParams.FUBI_NAME, deploymentParams.FUBI_SYMBOL);
-    await fUBI.deployed();
-    await ubiInstance.setDelegator(fUBI.address);
-    return fUBI;
+  const FUBIFactory = await ethers.getContractFactory("fUBI");
+  const fUBI = await FUBIFactory.deploy(ubiInstance.address, governorAddress, deploymentParams.FUBI_MAX_STREAMS_ALLOWED, deploymentParams.FUBI_NAME, deploymentParams.FUBI_SYMBOL);
+  await fUBI.deployed();
+  await ubiInstance.setDelegator(fUBI.address);
+  return fUBI;
 }
 
 async function deploySUBI(ubiInstance, governorAddress) {
@@ -60,12 +60,12 @@ describe("fUBI.sol", () => {
     ubi = await deployUBI(mockPoh.address);
     // Get the value of accruedPerSecond
     accruedPerSecond = await ubi.accruedPerSecond();
-    
+
     fUBI = await deployFUBI(ubi, accounts[0].address);
     sUBI = await deploySUBI(ubi, accounts[0].address);
 
     // default all accounts to not registered
-    for(let i = 0; i < accounts.length; i++) {
+    for (let i = 0; i < accounts.length; i++) {
       await pohMockService.setSubmissionIsRegistered(mockPoh, accounts[i].address, false);
     }
   })
@@ -75,7 +75,7 @@ describe("fUBI.sol", () => {
       // ASSERT
       expect(await fUBI.name()).to.equal(deploymentParams.FUBI_NAME);
       expect(await fUBI.symbol()).to.equal(deploymentParams.FUBI_SYMBOL);
-      expect(await fUBI.ubi(),"lll").to.equal(ubi.address);
+      expect(await fUBI.ubi(), "lll").to.equal(ubi.address);
 
     });
 
@@ -87,13 +87,13 @@ describe("fUBI.sol", () => {
       await ubi.startAccruing(sender.address)
 
       // ACT
-      await ubi.connect(accounts[1]).createDelegation(fUBI.address, accounts[2].address, 10000, ethers.utils.defaultAbiCoder.encode([],[]));
+      await ubi.connect(accounts[1]).createDelegation(fUBI.address, accounts[2].address, 10000, ethers.utils.defaultAbiCoder.encode([], []));
 
       // // ASSERT
       expect((await fUBI.balanceOf(accounts[2].address)).toNumber()).to.equal(1);
     });
 
-    
+
     it("require fail - Creating flow of UBI per second higher than UBI.accruedPerSecond should fail.", async () => {
       // ARRANGE
       const sender = accounts[0];
@@ -168,7 +168,7 @@ describe("fUBI.sol", () => {
 
     it("happy path - Creating a new flow after one has been canceled should not increment the number of active flows", async () => {
       // ARRANGE
-      
+
       const sender = accounts[0];
       const recipient = accounts[1];
       await pohMockService.setSubmissionIsRegistered(mockPoh, sender.address, true);
@@ -181,20 +181,20 @@ describe("fUBI.sol", () => {
         recipient.address,
         accruedPerSecond.toNumber(),
         ubi, fUBI);
-        
+
 
       // Get the previous flow count
       const prevFlowsCount = await fUBI.getFlowsCount(sender.address);
 
 
-      
+
       await testUtils.timeForward(3600, network);
       // Delegate half of UBI per second
       const delegatedPerSecond = accruedPerSecond.div(2).toNumber();
-      
+
       await ubi.cancelDelegation(fUBI.address, flow1Id);
-      
-      
+
+
       // Create flow with half ubiPerSecond delegation
       const flow2Id = await testUtils.createFlow(
         sender,
@@ -223,16 +223,16 @@ describe("fUBI.sol", () => {
         recipient.address,
         delegatedPerSecond1,
         ubi, fUBI);
-        
+
 
       // Get the previous flow count
       const prevFlowsCount = await fUBI.getFlowsCount(sender.address);
-      
+
       await testUtils.timeForward(3600, network);
       // Delegate half of UBI per second
       const delegatedPerSecond = accruedPerSecond.div(2).toNumber();
-      
-      
+
+
       // Create flow with half ubiPerSecond delegation
       const flow2Id = await testUtils.createFlow(
         sender,
@@ -271,7 +271,7 @@ describe("fUBI.sol", () => {
 
 
     });
-    
+
     it("require fail - Creating flow of UBI per second higher than UBI available should fail. 1 stream", async () => {
       // ARRANGE
       const sender = accounts[0];
@@ -446,12 +446,32 @@ describe("fUBI.sol", () => {
       const prevTransferRecipientBalance = await ubi.balanceOf(transferRecipient.address);
 
       const transferValue = ethers.utils.parseUnits("1", "ether");
-      
+
       await ubi.connect(recipient).transfer(transferRecipient.address, transferValue);
-        
+
       await expect(await ubi.balanceOf(transferRecipient.address)).to.eq(prevTransferRecipientBalance.add(transferValue), "Invalid balance after transfer");
 
 
+    });
+
+    it("require fail - Should fail When recipient is contract, but doesnt implement ERC721Receiver", async () => {
+      // ARRANGE
+      const sender = accounts[0];
+      const recipient = accounts[1];
+      const transferRecipient = accounts[2];
+      await pohMockService.setSubmissionIsRegistered(mockPoh, sender.address, true);
+      await pohMockService.setSubmissionIsRegistered(mockPoh, ubi.address, false);
+      await ubi.startAccruing(sender.address);
+
+      // Get the value of accruedPerSecond
+      const accruedPerSecond = await ubi.accruedPerSecond();
+
+      // ACT && ASSERT
+      // try to create flow to a contract (we'll use UBI for simplicity because its already deployed on this tests)
+      await expect(testUtils.createFlow(sender,
+        ubi.address,
+        accruedPerSecond.div(2),
+        ubi, fUBI)).to.be.revertedWith("ERC721: transfer to non ERC721Receiver implementer");
     });
 
   });

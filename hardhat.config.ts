@@ -7,6 +7,7 @@ import "@nomiclabs/hardhat-waffle";
 import "@nomiclabs/hardhat-ethers";
 import '@openzeppelin/hardhat-upgrades';
 import { HardhatUserConfig, HttpNetworkUserConfig } from "hardhat/types";
+
 require("hardhat-gas-reporter");
 require("solidity-coverage");
 require("./scripts/tasks");
