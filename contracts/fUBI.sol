@@ -309,10 +309,10 @@ contract fUBI is ERC721, IFUBI, ReentrancyGuard  {
         Types.Flow memory flow = Flows[tokenId];
         if(flow.isActive && from != address(0)){
         
-        IUBI(ubi).onDelegationTransfer(from, to, flow.ratePerSecond);
-        
-        ubiInflow[from] = ubiInflow[from].sub(flow.ratePerSecond);
-        ubiInflow[to] = ubiInflow[to].add(flow.ratePerSecond);
+          IUBI(ubi).onDelegationTransfer(from, to, flow.ratePerSecond);
+          
+          ubiInflow[from] = ubiInflow[from].sub(flow.ratePerSecond);
+          ubiInflow[to] = ubiInflow[to].add(flow.ratePerSecond);
         }
     }
 
@@ -445,6 +445,10 @@ contract fUBI is ERC721, IFUBI, ReentrancyGuard  {
 
     function totalAccumulatedTime(address _human) external virtual view returns (uint256) {
       return 0;
+    }
+
+    function getActiveDelegationsOf(address _human) public override view returns (uint256[] memory) {
+      return FlowIdsOf[_human];
     }
 
     // function incomingRatePerSecond(address _human) external override view returns (uint256) {

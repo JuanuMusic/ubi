@@ -216,6 +216,10 @@ contract UBI is Initializable {
     uint256 delegatorsLength = delegators.length();
     for(uint256 i = 0; i < delegatorsLength; ++i) {
       address thisDelegator = delegators.at(i); // Get delegator cor each iteration
+      uint256[] memory delegations = IUBIDelegator(thisDelegator).getActiveDelegationsOf(_human);
+      for(uint256 j = 0; j < delegations.length; ++j) {
+        cancelDelegation(thisDelegator, delegations[j]);
+      }
       IUBIDelegator(thisDelegator).onReportRemoval(msg.sender);
     }
   }
@@ -246,7 +250,7 @@ contract UBI is Initializable {
   *  @param _amount The amount to tranfer in base units.
   */
   function transfer(address _recipient, uint256 _amount) public returns (bool) {
-    updateBalance(msg.sender);
+    consolidateBalance(msg.sender);
     ubiBalance[msg.sender] = ubiBalance[msg.sender].sub(_amount, "ERC20: transfer amount exceeds balance");
     ubiBalance[_recipient] = ubiBalance[_recipient].add(_amount);
     emit Transfer(msg.sender, _recipient, _amount);
@@ -261,7 +265,7 @@ contract UBI is Initializable {
   function transferFrom(address _sender, address _recipient, uint256 _amount) public returns (bool) {
     
     allowance[_sender][msg.sender] = allowance[_sender][msg.sender].sub(_amount, "ERC20: transfer amount exceeds allowance");
-    updateBalance(_sender);
+    consolidateBalance(_sender);
     ubiBalance[_sender] = ubiBalance[_sender].sub(_amount, "ERC20: transfer amount exceeds balance");
     ubiBalance[_recipient] = ubiBalance[_recipient].add(_amount);
     emit Transfer(_sender, _recipient, _amount);
@@ -304,7 +308,7 @@ contract UBI is Initializable {
   *  @param _amount The quantity of tokens to burn in base units.
   */
   function burn(uint256 _amount) public {
-    updateBalance(msg.sender);
+    consolidateBalance(msg.sender);
     ubiBalance[msg.sender] = ubiBalance[msg.sender].sub(_amount, "ERC20: burn amount exceeds balance");
     totalSupply = totalSupply.sub(_amount);
     emit Transfer(msg.sender, address(0), _amount);
@@ -316,7 +320,7 @@ contract UBI is Initializable {
   */
   function burnFrom(address _account, uint256 _amount) public {
     allowance[_account][msg.sender] = allowance[_account][msg.sender].sub(_amount, "ERC20: burn amount exceeds allowance");
-    updateBalance(_account);
+    consolidateBalance(_account);
     ubiBalance[_account] = ubiBalance[_account].sub(_amount, "ERC20: burn amount exceeds balance");
     totalSupply = totalSupply.sub(_amount);
     emit Transfer(_account, address(0), _amount);
@@ -397,8 +401,8 @@ contract UBI is Initializable {
     require(lockedDelegatedValue[msg.sender] + ubiPerSecond <= accruedPerSecond, "not enough value to delegate");
 
     // Update sender and recipient balances.
-    updateBalance(msg.sender);
-    updateBalance(recipient);
+    consolidateBalance(msg.sender);
+    consolidateBalance(recipient);
     IUBIDelegator(implementation).createDelegation(msg.sender, recipient, ubiPerSecond, data);
     lockedDelegatedValue[msg.sender] += ubiPerSecond;
   }
@@ -416,8 +420,8 @@ contract UBI is Initializable {
     IUBIDelegator delegator = IUBIDelegator(implementation);
     (address sender, address recipient, uint256 rate, bool prevIsActive) =  delegator.getDelegationInfo(delegationId);    
 
-    updateBalance(recipient);
-    updateBalance(sender);
+    consolidateBalance(recipient);
+    consolidateBalance(sender);
     uint256 withdrawnAmount = delegator.onWithdraw(delegationId);
     ubiBalance[recipient] += withdrawnAmount;
     
@@ -444,8 +448,8 @@ contract UBI is Initializable {
       IUBIDelegator delegator = IUBIDelegator(delegatorImpl);
       // Get delegation
       (address sender, address recipient, uint256 ratePerSecond, bool isActive) = delegator.getDelegationInfo(delegationId);
-      updateBalance(sender);
-      updateBalance(recipient);
+      consolidateBalance(sender);
+      consolidateBalance(recipient);
       // TODO: add permissions (allow to cancel if implementation is not active).
       uint256 withdrawnAmount = delegator.cancelDelegation(delegationId);
 
@@ -455,8 +459,8 @@ contract UBI is Initializable {
     }
 
     function onDelegationTransfer(address _oldOwner, address _newOwner, uint256 ratePerSecond) public onlyDelegator {
-      updateBalance(_oldOwner);
-      updateBalance(_newOwner);
+      consolidateBalance(_oldOwner);
+      consolidateBalance(_newOwner);
     }
 
   /* Getters */
@@ -506,10 +510,13 @@ contract UBI is Initializable {
   }
   
 
-  function updateBalance(address _human) internal {
+  function consolidateBalance(address _human) internal {
     uint256 newSupplyFrom =  getAccruedValue(_human);
 
     ubiBalance[_human] = ubiBalance[_human].add(newSupplyFrom);
-    accruedSince[_human] = block.timestamp;
+    // Only update accrued since if user is registered and is accruing
+    if(proofOfHumanity.isRegistered(_human) && accruedSince[_human] > 0) {
+      accruedSince[_human] = block.timestamp;
+    }
   }
 }

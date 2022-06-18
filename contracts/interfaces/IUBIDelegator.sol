@@ -52,4 +52,9 @@ interface IUBIDelegator {
      * @dev Executed whenever the delegation is withdrawn. It should execute any processes required to update the delegation. Should return the amount withdrawn.
      */
     function onWithdraw(uint256 delegationId) external virtual returns(uint256 amountWithdrawn);   
+
+    /**
+    * @dev Returns the list of active delegations for the given human.
+    */
+    function getActiveDelegationsOf(address _human) external virtual view returns (uint256[] memory delegations);
 }
