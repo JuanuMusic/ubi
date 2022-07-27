@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="300mm"
+   height="300mm"
+   viewBox="0 0 300 300"
+   version="1.1"
+   id="svg5"
+   sodipodi:docname="fubi_template.svg"
+   inkscape:version="1.1.1 (3bf5ae0d25, 2021-09-20)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+   <style>
+		@import url("https://fonts.googleapis.com/css?family=Roboto+Condensed:400,400i,700,700i");
+		@import url("https://fonts.googleapis.com/css?family=Open+Sans:400,400i,700,700i");
+   </style>
+  <sodipodi:namedview
+     id="namedview21"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="0.65704861"
+     inkscape:cx="275.47429"
+     inkscape:cy="604.21709"
+     inkscape:window-width="2160"
+     inkscape:window-height="1244"
+     inkscape:window-x="-11"
+     inkscape:window-y="-11"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs2" />
+  <g
+     id="layer1"
+     transform="translate(-0.80536913,-2.8187919)">
+    <text
+       xml:space="preserve"
+	   
+	   font-family="Roboto Condensed"
+	   
+       x="23.825706"
+       y="60.48307"
+       id="text1706"><tspan
+         id="tspan1704"
+         style="stroke-width:0.264583"
+         x="23.825706"
+         y="60.48307">0x000000000000000000000000000000000</tspan></text>
+    <text
+       xml:space="preserve"
+	   font-family="Open Sans"
+       x="37.176647"
+       y="148.70654"
+       id="text2802"><tspan
+         id="tspan2800"
+         style="stroke-width:0.264583"
+         x="37.176647"
+         y="148.70654">%50</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
+       x="34.698193"
+       y="196.20999"
+       id="text3268"><tspan
+         id="tspan3266"
+         style="stroke-width:0.264583"
+         x="34.698193"
+         y="196.20999">140000000000</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
+       x="22.173412"
+       y="43.946632"
+       id="text5054"><tspan
+         id="tspan5052"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:10.5833px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.264583"
+         x="22.173412"
+         y="43.946632">Source Human</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
+       x="24.540323"
+       y="97.087128"
+       id="text1706-3"><tspan
+         id="tspan1704-3"
+         style="stroke-width:0.264583"
+         x="24.540323"
+         y="97.087128">0x000000000000000000000000000000000</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
+       x="22.888033"
+       y="80.55069"
+       id="text5054-1"><tspan
+         id="tspan5052-2"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:10.5833px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.264583"
+         x="22.888033"
+         y="80.55069">Recipient</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
+       x="33.458973"
+       y="132.18359"
+       id="text6972"><tspan
+         id="tspan6970"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:10.5833px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.264583"
+         x="33.458973"
+         y="132.18359">Delegated PCT:</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
+       x="34.285114"
+       y="176.79555"
+       id="text8572"><tspan
+         id="tspan8570"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:10.5833px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.264583"
+         x="34.285114"
+         y="176.79555">Delegated per second:</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
+       x="38.002781"
+       y="222.23364"
+       id="text18566"><tspan
+         id="tspan18564"
+         style="font-weight:bold;stroke-width:0.264583"
+         x="38.002781"
+         y="222.23364">Status</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
+       x="40.068146"
+       y="235.86508"
+       id="text20880"><tspan
+         id="tspan20878"
+         style="stroke-width:0.264583"
+         x="40.068146"
+         y="235.86508">Active</tspan></text>
+  </g>
+</svg>

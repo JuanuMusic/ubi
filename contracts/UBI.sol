@@ -116,6 +116,9 @@ contract UBI is Initializable {
   
   /// @dev Stores the total locked value from delegations.
   mapping(address => uint256) public lockedDelegatedValue;
+  
+  /// @dev Stores the delegators that each account is using
+  mapping(address => EnumerableSet.AddressSet) enabledDelegators;
 
   using EnumerableSet for EnumerableSet.AddressSet;
   EnumerableSet.AddressSet delegators;
@@ -213,9 +216,9 @@ contract UBI is Initializable {
     ubiBalance[msg.sender] = ubiBalance[msg.sender].add(newSupply);
     totalSupply = totalSupply.add(newSupply);
 
-    uint256 delegatorsLength = delegators.length();
-    for(uint256 i = 0; i < delegatorsLength; ++i) {
-      address thisDelegator = delegators.at(i); // Get delegator cor each iteration
+    EnumerableSet.AddressSet storage accountDelegators = enabledDelegators[_human];
+    for(uint256 i = 0; i < accountDelegators.length(); i++) {
+      address thisDelegator = accountDelegators.at(i); // Get delegator cor each iteration
       uint256[] memory delegations = IUBIDelegator(thisDelegator).getActiveDelegationsOf(_human);
       for(uint256 j = 0; j < delegations.length; ++j) {
         cancelDelegation(thisDelegator, delegations[j]);
@@ -405,6 +408,10 @@ contract UBI is Initializable {
     consolidateBalance(recipient);
     IUBIDelegator(implementation).createDelegation(msg.sender, recipient, ubiPerSecond, data);
     lockedDelegatedValue[msg.sender] += ubiPerSecond;
+    // Add delegator as used by account
+    enabledDelegators[msg.sender].add(implementation);
+    enabledDelegators[recipient].add(implementation);
+
   }
 
   function withdrawFromDelegations(address implementation, uint256[] calldata delegationIds)
@@ -476,10 +483,10 @@ contract UBI is Initializable {
       accruedPerSecond.mul(block.timestamp.sub(accruedSince[_human])) :
       0;
 
-    // Get the new supply from the delegations.
-    uint256 delegatorsLength = delegators.length();
-    for(uint256 i = 0; i < delegatorsLength; i++) {
-      IUBIDelegator delegator = IUBIDelegator(delegators.at(i));
+    // Get the new supply from the delegations active on this account.
+    EnumerableSet.AddressSet storage accountDelegators = enabledDelegators[_human];
+    for(uint256 i = 0; i < accountDelegators.length(); i++) {
+      IUBIDelegator delegator = IUBIDelegator(accountDelegators.at(i));
       totalAccrued += delegator.consolidatedAccruedValue(_human);
     }
 

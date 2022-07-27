@@ -438,9 +438,11 @@ describe("fUBI.sol", () => {
         newFlowPaymentPerSecond,
         ubi, fUBI);
 
+      console.log("prevRecipientBalance", prevRecipientBalance);
       await testUtils.timeForward(3600, network); // prev call added 1 second
 
       const newRecipientBalance = await ubi.balanceOf(recipient.address);
+      console.log("newRecipientBalance", newRecipientBalance);
       await expect(newRecipientBalance).to.eq(prevRecipientBalance.add(newFlowPaymentPerSecond.mul(3600)), "Invalid balance of flow recipient");
 
       const prevTransferRecipientBalance = await ubi.balanceOf(transferRecipient.address);

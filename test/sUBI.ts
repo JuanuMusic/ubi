@@ -778,7 +778,7 @@ describe("sUBI.sol", () => {
       await testUtils.goToMiddleOfStream(streamId1, sUBI, network);
 
       // ASSERT
-      const activeStreams = await sUBI.getActiveStreamsOf(sender.address);
+      const activeStreams = await sUBI.getActiveDelegationsOf(sender.address);
       expect(activeStreams.length).to.eq(3, "Human should have 3 active streams");
     });
   })
@@ -1622,7 +1622,7 @@ describe("sUBI.sol", () => {
 
       // ASSERT
       // Assert no active streams
-      const activeStreams = await sUBI.getActiveStreamsOf(sender.address);
+      const activeStreams = await sUBI.getActiveDelegationsOf(sender.address);
       expect(activeStreams.length).to.eq(0, "There should be no active streams after reportRemoval");
       // assert canceller balance increased
       const newCancellerBalance = await ubi.balanceOf(canceller.address);
