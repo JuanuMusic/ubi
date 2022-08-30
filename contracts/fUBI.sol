@@ -157,7 +157,7 @@ contract fUBI is ERC721, IFUBI, ReentrancyGuard  {
 
       FlowIdsOf[sender].push(lastTokenId);
 
-      _safeMint(recipient, lastTokenId);
+      _safeMint(recipient, lastTokenId, data);
 
       ubiOutflow[sender] = ubiOutflow[sender].add(ubiPerSecond);
       ubiInflow[recipient] = ubiInflow[recipient].add(ubiPerSecond); 
