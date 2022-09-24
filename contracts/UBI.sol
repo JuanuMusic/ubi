@@ -196,8 +196,9 @@ contract UBI is Initializable {
   */
   function startAccruing(address _human) external {
     require(proofOfHumanity.isRegistered(_human), "The submission is not registered in Proof Of Humanity.");
-    require(accruedSince[_human] == 0, "The submission is already accruing UBI.");
-    accruedSince[_human] = block.timestamp;
+    // require(enabledDelegators[_human].length() > 0, "The submission is already accruing UBI.");
+    //accruedSince[_human] = block.timestamp;
+    consolidateBalance(_human);
   }
 
   /** @dev Allows anyone to report a submission that
@@ -485,9 +486,13 @@ contract UBI is Initializable {
 
     // Get the new supply from the delegations active on this account.
     EnumerableSet.AddressSet storage accountDelegators = enabledDelegators[_human];
+    // console.log("BALANCE FOR _human", _human);
+    // console.log("TOTAL ACCRUED", totalAccrued);
     for(uint256 i = 0; i < accountDelegators.length(); i++) {
       IUBIDelegator delegator = IUBIDelegator(accountDelegators.at(i));
-      totalAccrued += delegator.consolidatedAccruedValue(_human);
+      uint256 delegatorBalance = delegator.consolidatedAccruedValue(_human);
+      // console.log("BALANCE FOR _human", delegatorBalance);
+      totalAccrued += delegatorBalance;
     }
 
     return totalAccrued;
@@ -519,11 +524,11 @@ contract UBI is Initializable {
 
   function consolidateBalance(address _human) internal {
     uint256 newSupplyFrom =  getAccruedValue(_human);
-
+  
     ubiBalance[_human] = ubiBalance[_human].add(newSupplyFrom);
     // Only update accrued since if user is registered and is accruing
-    if(proofOfHumanity.isRegistered(_human) && accruedSince[_human] > 0) {
+    //if(proofOfHumanity.isRegistered(_human) && accruedSince[_human] > 0) {
       accruedSince[_human] = block.timestamp;
-    }
+    //}
   }
 }

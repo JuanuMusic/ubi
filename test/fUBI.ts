@@ -416,7 +416,7 @@ describe("fUBI.sol", () => {
     it("require fail - Recipient of flow can transfer UBI by just calling transfer", async () => {
       // ARRANGE
       const sender = accounts[0];
-      const recipient = accounts[1];
+      const recipient = accounts[6];
       const transferRecipient = accounts[2];
       await pohMockService.setSubmissionIsRegistered(mockPoh, sender.address, true);
       await pohMockService.setSubmissionIsRegistered(mockPoh, recipient.address, false);
@@ -429,7 +429,6 @@ describe("fUBI.sol", () => {
       // Generate invalid payment per second
       const newFlowPaymentPerSecond = accruedPerSecond;
 
-
       // ACT && ASSERT
       // try to create flow with a value greater than available, should revert
       const prevRecipientBalance = await ubi.balanceOf(recipient.address);
@@ -438,11 +437,11 @@ describe("fUBI.sol", () => {
         newFlowPaymentPerSecond,
         ubi, fUBI);
 
-      console.log("prevRecipientBalance", prevRecipientBalance);
+      console.log("prevRecipientBalance", prevRecipientBalance.toString());
       await testUtils.timeForward(3600, network); // prev call added 1 second
 
       const newRecipientBalance = await ubi.balanceOf(recipient.address);
-      console.log("newRecipientBalance", newRecipientBalance);
+      console.log("newRecipientBalance", newRecipientBalance.toString());
       await expect(newRecipientBalance).to.eq(prevRecipientBalance.add(newFlowPaymentPerSecond.mul(3600)), "Invalid balance of flow recipient");
 
       const prevTransferRecipientBalance = await ubi.balanceOf(transferRecipient.address);

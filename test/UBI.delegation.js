@@ -15,7 +15,7 @@ let accounts;
  @summary Tests for UBI.sol
 */
 const skip = true;
-contract('UBI.sol', skip ? () => {} : accounts => {
+contract('UBI.sol', skip ? () => { } : accounts => {
     let subi;
     before(async () => {
         accounts = await ethers.getSigners();
@@ -203,7 +203,6 @@ contract('UBI.sol', skip ? () => {} : accounts => {
             })
 
             describe("getDelegatedAccruedValue with multiple overlapping delegations", () => {
-
                 describe("getDelegatedAccruedValue without withdrawals", () => {
                     let streamId1;
                     let streamId2;
@@ -323,7 +322,7 @@ contract('UBI.sol', skip ? () => {} : accounts => {
                     it("happy path - after withdrawing from stream 2, which is at middle of stream, getDelegatedAccruedValue should return 179900 + 0 UBIwei.", async () => {
                         // ARRANGE & ACT                
                         await ubi.withdrawFromStreams([streamId2]);
-                        
+
                         // ASSERT 
                         // Check that getDelegatedAccruedValue returns 179900 + 0 (because withdraw from stream moves 1 secon further).
                         expect((await ubi.getDelegatedAccruedValue(addresses[0])).toNumber()).to.eq(179900 + 0);

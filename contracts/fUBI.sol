@@ -196,7 +196,9 @@ contract fUBI is ERC721, IFUBI, ReentrancyGuard  {
   // }
 
   function incomingTotalAccruedValue(address _human) public override view returns (uint256) {
-    return ubiInflow[_human].mul(block.timestamp.sub(IUBI(ubi).getAccruedSince(_human)));
+    uint256 accruedSince = IUBI(ubi).getAccruedSince(_human);
+    //console.log("ACCRUED SINCE ON INCOMING TOTAL ACCRUED", accruedSince);
+    return ubiInflow[_human].mul(block.timestamp.sub(accruedSince));
   }
 
   function outgoingTotalAccruedValue(address _human) public override view returns (uint256) {
@@ -205,7 +207,9 @@ contract fUBI is ERC721, IFUBI, ReentrancyGuard  {
 
   function consolidatedAccruedValue(address _human) public virtual override view returns (uint256 consolidated) {
       uint256 inTotalAccruedValue = incomingTotalAccruedValue(_human);
+      // console.log("inTotalAccruedValue", inTotalAccruedValue);
       uint256 outTotalAccruedValue = outgoingTotalAccruedValue(_human);
+      // console.log("outTotalAccruedValue", outTotalAccruedValue);
       return inTotalAccruedValue - outTotalAccruedValue;
   }
 

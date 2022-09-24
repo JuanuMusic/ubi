@@ -15,7 +15,6 @@ let accounts;
  @summary Tests for UBI.sol
 */
 const skipAll = false;
-const skipStreams = true;
 contract('UBI.sol', skipAll ? function () { } : function (accounts) {
     before(async () => {
         accounts = await ethers.getSigners();
@@ -101,13 +100,6 @@ contract('UBI.sol', skipAll ? function () { } : function (accounts) {
             expect((await ubi.accruedSince(addresses[1])).toString()).to.equal(
                 accruedSince.toString()
             );
-        });
-
-        it("require fail - The submission is already accruing UBI.", async () => {
-            // Make sure it reverts if you try to accrue UBI while already accruing UBI.
-            await expect(
-                ubi.startAccruing(addresses[1])
-            ).to.be.revertedWith("The submission is already accruing UBI.");
         });
 
         it("happy path - a submission removed from Proof of Humanity no longer accrues value,  but keeps its consolidated balance.", async () => {
@@ -392,4 +384,48 @@ contract('UBI.sol', skipAll ? function () { } : function (accounts) {
         });
     });
 
+    describe('UBI & Delegations', async () => {
+
+
+        async function deployFUBI(ubiInstance, governorAddress) {
+            const FUBIFactory = await ethers.getContractFactory("fUBI");
+            const fUBI = await FUBIFactory.deploy(ubiInstance.address, governorAddress, deploymentParams.FUBI_MAX_STREAMS_ALLOWED, deploymentParams.FUBI_NAME, deploymentParams.FUBI_SYMBOL);
+            await fUBI.deployed();
+            await ubiInstance.setDelegator(fUBI.address);
+            return fUBI;
+        }
+        it("happy path - should allow to start accruing for delegated accounts not previously accruing", async () => {
+
+            // ARRANGE
+            const fUBI = await deployFUBI(ubi, accounts[0].address);
+            await setSubmissionIsRegistered(accounts[0].address, true);
+            await setSubmissionIsRegistered(addresses[1], false);
+            // Create stream
+            await testUtils.createFlow(accounts[0], addresses[1], 100, ubi, fUBI);
+
+            // Accrue some
+            await testUtils.timeForward(100, network);
+
+            // Set previously unregistered as register
+            await setSubmissionIsRegistered(addresses[1], true);
+
+            // ASSERT
+            // Start accruing on delegated not previously accruing 
+            await ubi.startAccruing(addresses[1]);
+        })
+
+        it("happy path - calling startAcruing more than once should not break balances", async () => {
+
+            // ARRANGE
+            await setSubmissionIsRegistered(accounts[5].address, true);
+            await ubi.startAccruing(accounts[5].address);
+            const afterTimeForwardBalance = (await ubi.balanceOf(accounts[5].address)).toString();
+            // This mines and andvances 1 second
+            await ubi.startAccruing(accounts[5].address);
+            // human should have accrued 2 seconds of UBI.
+            const afterSecondTimeForwardBalance = (await ubi.balanceOf(accounts[5].address)).toString();
+            // New balance should be previous balance + 1 second
+            expect(afterSecondTimeForwardBalance.toString()).to.eq(BigNumber(afterTimeForwardBalance).plus(accruedPerSecond).toString());
+        })
+    })
 });
